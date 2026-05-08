@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criar conta :: Implementare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300..900;1,300..900&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body {
+    background:
+      radial-gradient(circle at 20% 0%, var(--teal-soft) 0, transparent 40%),
+      radial-gradient(circle at 90% 100%, var(--lime-soft) 0, transparent 40%),
+      var(--paper);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .auth-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .auth-card {
+    background: var(--white);
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    padding: 44px 40px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+  }
+
+  .auth-brand {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .auth-brand .brand-mark { font-size: 28px; color: var(--teal); }
+  .auth-brand .brand-tag { display: block; margin-top: 4px; font-size: 11px; }
+
+  .auth-card h1 { font-size: 28px; margin-bottom: 6px; }
+
+  .auth-card .auth-sub {
+    font-size: 14px;
+    color: var(--ink-muted);
+    margin-bottom: 28px;
+  }
+
+  .auth-form > div + div { margin-top: 14px; }
+
+  .auth-actions { margin-top: 24px; }
+
+  .auth-foot {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .auth-foot a { font-weight: 500; }
+
+  .pass-wrap { position: relative; }
+  .pass-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--ink-muted);
+    border-radius: 4px;
+  }
+  .pass-toggle:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-mark">Implementare</span>
+      <span class="brand-tag">Saia do Operacional</span>
+    </div>
+
+    <h1>Criar conta</h1>
+    <p class="auth-sub">Em 1 minuto você está dentro da ferramenta.</p>
+
+    <div id="alertSlot"></div>
+
+    <form class="auth-form" id="cadastroForm" onsubmit="return false;">
+      <div>
+        <label class="field-label">Seu nome</label>
+        <input type="text" id="nome" required placeholder="ex: Dra. Mariana Silva">
+      </div>
+      <div>
+        <label class="field-label">Especialidade</label>
+        <input type="text" id="especialidade" required placeholder="ex: Dermatologia, Ginecologia, Nutrologia...">
+      </div>
+      <div>
+        <label class="field-label">E-mail</label>
+        <input type="email" id="email" required autocomplete="email" placeholder="seu@email.com">
+      </div>
+      <div>
+        <label class="field-label">Senha</label>
+        <div class="pass-wrap">
+          <input type="password" id="senha" required minlength="6" autocomplete="new-password" placeholder="mínimo 6 caracteres">
+          <button type="button" class="pass-toggle" onclick="togglePass()" id="passToggle" aria-label="Mostrar/ocultar senha"></button>
+        </div>
+        <span class="field-help">Mínimo 6 caracteres. Use uma senha que você lembra.</span>
+      </div>
+      <div class="auth-actions">
+        <button type="submit" class="btn btn-primary btn-large btn-block" id="btnCriar" onclick="criar()">Criar conta</button>
+      </div>
+    </form>
+
+    <div class="auth-foot">
+      Já tem conta?
+      <a href="index.html">Entrar</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>Implementare :: aceleração comercial para profissionais da saúde</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="icons.js"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
+<script>
+  document.getElementById('passToggle').innerHTML = window.Icons.eye;
+
+  function togglePass() {
+    const input = document.getElementById('senha');
+    const btn = document.getElementById('passToggle');
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.innerHTML = window.Icons.eyeOff;
+    } else {
+      input.type = 'password';
+      btn.innerHTML = window.Icons.eye;
+    }
+  }
+
+  function showAlert(msg, type) {
+    const slot = document.getElementById('alertSlot');
+    const cls = type === 'danger' ? 'alert-danger' : (type === 'success' ? 'alert-success' : '');
+    slot.innerHTML = `<div class="alert ${cls}">${msg}</div>`;
+  }
+
+  // se já logado, manda pra app
+  (async function() {
+    if (!window.AppAuth) return;
+    const session = await window.AppAuth.getSession();
+    if (session) window.location.href = 'app.html';
+  })();
+
+  async function criar() {
+    const nome = document.getElementById('nome').value.trim();
+    const especialidade = document.getElementById('especialidade').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+
+    if (!nome || !especialidade || !email || !senha) {
+      showAlert('Preenche todos os campos.', 'danger');
+      return;
+    }
+    if (senha.length < 6) {
+      showAlert('A senha precisa de pelo menos 6 caracteres.', 'danger');
+      return;
+    }
+
+    const btn = document.getElementById('btnCriar');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading"></span> criando conta...';
+
+    const { data, error } = await window.AppAuth.signUp(email, senha, nome, especialidade);
+
+    if (error) {
+      btn.disabled = false;
+      btn.textContent = 'Criar conta';
+      if (error.message.includes('already registered')) {
+        showAlert('Esse e-mail já tem conta. <a href="index.html">Entrar</a>.', 'danger');
+      } else {
+        showAlert(error.message, 'danger');
+      }
+      return;
+    }
+
+    // se Supabase tem confirmação por email ligada, mostra mensagem
+    if (data.user && !data.session) {
+      showAlert('Conta criada! Confirme seu e-mail antes de entrar (cheque sua caixa).', 'success');
+      btn.disabled = true;
+      btn.textContent = 'Confirme seu e-mail';
+      return;
+    }
+
+    // logada direto
+    window.location.href = 'app.html';
+  }
+
+  document.getElementById('cadastroForm').addEventListener('submit', criar);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova senha :: Implementare</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300..900;1,300..900&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: radial-gradient(circle at 20% 0%, var(--teal-soft) 0, transparent 40%), radial-gradient(circle at 90% 100%, var(--lime-soft) 0, transparent 40%), var(--paper); min-height: 100vh; display: flex; flex-direction: column; }
+  .auth-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+  .auth-card { background: var(--white); border: 1px solid var(--line-soft); border-radius: 14px; padding: 44px 40px; width: 100%; max-width: 440px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); }
+  .auth-brand { text-align: center; margin-bottom: 32px; }
+  .auth-brand .brand-mark { font-size: 28px; color: var(--teal); }
+  .auth-brand .brand-tag { display: block; margin-top: 4px; font-size: 11px; }
+  .auth-card h1 { font-size: 26px; margin-bottom: 6px; }
+  .auth-card .auth-sub { font-size: 14px; color: var(--ink-muted); margin-bottom: 28px; }
+  .auth-form > div + div { margin-top: 14px; }
+  .auth-actions { margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-mark">Implementare</span>
+      <span class="brand-tag">Saia do Operacional</span>
+    </div>
+    <h1>Nova senha</h1>
+    <p class="auth-sub">Define a nova senha pra sua conta.</p>
+    <div id="alertSlot"></div>
+    <form class="auth-form" id="redForm" onsubmit="return false;">
+      <div>
+        <label class="field-label">Nova senha</label>
+        <input type="password" id="senha1" required minlength="6" placeholder="mínimo 6 caracteres">
+      </div>
+      <div>
+        <label class="field-label">Repita a senha</label>
+        <input type="password" id="senha2" required minlength="6" placeholder="mesma senha">
+      </div>
+      <div class="auth-actions">
+        <button type="submit" class="btn btn-primary btn-large btn-block" id="btnSalvar" onclick="salvar()">Salvar nova senha</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer><div class="container"><p>Implementare :: aceleração comercial</p></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="icons.js"></script>
+<script src="supabase-config.js"></script>
+<script src="auth.js"></script>
+<script>
+  function showAlert(msg, type) {
+    document.getElementById('alertSlot').innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  }
+  async function salvar() {
+    const s1 = document.getElementById('senha1').value;
+    const s2 = document.getElementById('senha2').value;
+    if (!s1 || s1.length < 6) { showAlert('Senha precisa de pelo menos 6 caracteres.', 'danger'); return; }
+    if (s1 !== s2) { showAlert('As senhas não batem.', 'danger'); return; }
+    const btn = document.getElementById('btnSalvar');
+    btn.disabled = true; btn.innerHTML = '<span class="loading"></span> salvando...';
+    const { error } = await window.AppAuth.supabase.auth.updateUser({ password: s1 });
+    if (error) {
+      btn.disabled = false; btn.textContent = 'Salvar nova senha';
+      showAlert(error.message, 'danger'); return;
+    }
+    showAlert('Senha alterada. Redirecionando...', 'success');
+    setTimeout(() => window.location.href = 'app.html', 1500);
+  }
+  document.getElementById('redForm').addEventListener('submit', salvar);
+</script>
+
+</body>
+</html>
