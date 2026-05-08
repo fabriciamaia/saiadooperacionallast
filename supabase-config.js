@@ -14,6 +14,6 @@
 // ============================================================
 
 window.SUPABASE_CONFIG = {
-  url: 'COLE_AQUI_SUA_URL',
-  anonKey: 'COLE_AQUI_SUA_ANON_KEY'
+  url: 'https://wogwtiljgrenzezcdsqr.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvZ3d0aWxqZ3JlbnplemNkc3FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMTAyNjQsImV4cCI6MjA5Mzc4NjI2NH0.8pKMaNZy3hQIFKAYWzxaowSMdoWnXQiGwONVdnqAykY'
 };
